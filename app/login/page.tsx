@@ -40,7 +40,7 @@ export default function Home() {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-      <Button text="Login" />
+      <Button size="regular" text="Login" />
     </form>
   );
 }
