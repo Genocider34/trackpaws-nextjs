@@ -1,8 +1,6 @@
 import React from "react";
 import Hero from "./_components/Hero";
-import Image from "next/image";
 import Overview from "./_components/Overview";
-// import { LucideIcon } from "lucide-react";
 export default function LandingPage() {
   return (
     <main>
