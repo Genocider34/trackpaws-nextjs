@@ -14,8 +14,10 @@ export default function Overview() {
         </div>
 
         <div className="w-1/2 space-y-6">
-          <h2 className="text-5xl font-bold">What is Trackpaws?</h2>
-          <p className="text-gray-600">
+          <h2 className="text-3xl font-bold md:text-5xl ">
+            What is Trackpaws?
+          </h2>
+          <p className="text-xs text-gray-600 md:text-base">
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam
             quos quae, quidem, voluptates, quas quod quidem, voluptates, quas
             quod quidem, voluptates, quas quod quidem, voluptates, quas quod

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import NavBar from "./_components/NavBar";
 
 export const metadata: Metadata = {
   title: "Track Paws",
@@ -12,10 +11,7 @@ export default function LandingLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
-        <NavBar />
-        {children}
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

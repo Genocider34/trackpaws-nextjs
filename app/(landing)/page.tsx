@@ -1,30 +1,35 @@
-import React from "react";
+"use client";
+
+import React, { useRef } from "react";
 import Hero from "./_components/Hero";
 import Overview from "./_components/Overview";
+import Features from "./_components/Features";
+import Footer from "./_components/Footer";
+import NavBar from "./_components/NavBar";
+
 export default function LandingPage() {
+  const heroRef = useRef<HTMLDivElement>(null);
+  const overviewRef = useRef<HTMLDivElement>(null); // Create a ref for the Overview section
+  const featuresRef = useRef<HTMLDivElement>(null); // Create a ref for the Features section
+
   return (
     <main>
-      <Hero />
-      <Overview />
+      <NavBar
+        heroRef={heroRef}
+        overviewRef={overviewRef}
+        featuresRef={featuresRef}
+      />
 
-      <section className="bg-slate-200">
-        <div className="py-14">
-          <h2 className="text-4xl font-bold text-center mb-6">Features</h2>
-          <div className="container flex items-center justify-center gap-12 ">
-            <div>
-              <h3>Feature 1</h3>
-            </div>
-
-            <div>
-              <h3>Feature 2</h3>
-            </div>
-
-            <div>
-              <h3>Feature 3</h3>
-            </div>
-          </div>
-        </div>
-      </section>
+      <div ref={heroRef}>
+        <Hero />
+      </div>
+      <div ref={overviewRef}>
+        <Overview />
+      </div>
+      <div ref={featuresRef}>
+        <Features />
+      </div>
+      <Footer />
     </main>
   );
 }
