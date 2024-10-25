@@ -18,7 +18,7 @@ export default function Features() {
               Built for dogs and cats
             </h3>
             <div className="flex-grow">
-              <p>Design to built to withstand the pet's comfort.</p>
+              <p>Design to built to withstand the pet&apos;s comfort.</p>
             </div>
           </div>
 
@@ -53,7 +53,7 @@ export default function Features() {
             <h3 className="text-xl font-bold md:text-2xl">Wi-Fi built-in</h3>
             <div className="flex-grow">
               <p>
-                Trackpaws connectivity Wi-Fi built in ensures your pet's
+                Trackpaws connectivity Wi-Fi built in ensures your pet&apos;s
                 whereabouts even when you are far-off places{" "}
               </p>
             </div>
@@ -68,7 +68,7 @@ export default function Features() {
             <div className="flex-grow">
               <p>
                 Trackpaws provides an easy-to-use dashboard to keep track of
-                your pet's lost and found status.
+                your pet&apos;s lost and found status.
               </p>
             </div>
           </div>
@@ -81,7 +81,8 @@ export default function Features() {
             </h3>
             <div className="flex-grow">
               <p>
-                Trackpaws tracks the history of your pet's location every minute
+                Trackpaws tracks the history of your pet&apos;s location every
+                minute
               </p>
             </div>
           </div>
