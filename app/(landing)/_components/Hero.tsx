@@ -4,12 +4,12 @@ import { useState } from "react";
 
 export default function Hero() {
   const [apkDownloadUrl, setApkDownloadUrl] = useState(
-    "/downloads/trackpaws-v1.1.apk"
+    "/downloads/TrackPaws.apk"
   );
 
   const handleDownloadClick = () => {
     setApkDownloadUrl(
-      `/downloads/trackpaws-v1.1.apk?timestamp=${new Date().getTime()}`
+      `/downloads/TrackPaws.apk?timestamp=${new Date().getTime()}`
     );
   };
 
