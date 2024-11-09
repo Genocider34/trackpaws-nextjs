@@ -1,6 +1,5 @@
 import { IoPaw } from "react-icons/io5";
 import { FaCompass } from "react-icons/fa";
-import { IoTimeSharp } from "react-icons/io5";
 import { MdSettingsInputAntenna } from "react-icons/md";
 import { FaDog } from "react-icons/fa6";
 import { FaHistory } from "react-icons/fa";
