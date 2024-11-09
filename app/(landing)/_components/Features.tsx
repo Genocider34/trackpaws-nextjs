@@ -18,9 +18,7 @@ export default function Features() {
               Built for dogs and cats
             </h3>
             <div className="flex-grow">
-              <p className="text-sm">
-                Design to built to withstand the pet&apos;s comfort.
-              </p>
+              <p className="text-sm">Specifically designed for dogs and cats</p>
             </div>
           </div>
 
@@ -34,17 +32,6 @@ export default function Features() {
               <p className="text-sm">
                 Use the mobile application to check the real-time location of
                 your pet at any time.
-              </p>
-            </div>
-          </div>
-
-          {/* Feature 3 */}
-          <div className="w-full md:w-1/3 flex flex-col space-y-2 bg-slate-300 rounded-xl p-6 flex-1">
-            <IoTimeSharp size={40} color="#3B82F6" />
-            <h3 className="text-lg font-bold md:text-2xl">Long battery life</h3>
-            <div className="flex-grow">
-              <p className="text-sm">
-                Battery life lasts for about 12 hours on a single charge.
               </p>
             </div>
           </div>
@@ -85,8 +72,8 @@ export default function Features() {
             </h3>
             <div className="flex-grow">
               <p className="text-sm">
-                Trackpaws tracks the history of your pet&apos;s location every
-                minute
+                Trackpaws tracks the history of your pet&apos;s location every 5
+                minutes
               </p>
             </div>
           </div>

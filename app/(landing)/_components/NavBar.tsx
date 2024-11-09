@@ -56,7 +56,6 @@ export default function NavBar({
         >
           Features
         </li>
-        <li className="hidden font-bold cursor-pointer sm:block">About</li>
       </ul>
     </nav>
   );

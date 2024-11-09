@@ -16,9 +16,9 @@ export default function Overview() {
         <div className="w-1/2 space-y-2">
           <h2 className="text-lg font-bold md:text-5xl ">What is Trackpaws?</h2>
           <p className="text-xs text-gray-600 md:text-base">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam
-            quos quae, quidem, voluptates, quas quod quidem, voluptates, quas
-            quod quidem, voluptates, quas quod quidem, voluptates, quas quod
+            Trackpaws is a mobile application that uses GPS tracking technology
+            to help find lost pets. With Trackpaws, pet owners can post a lost
+            or found pet on the app, and other pet owners can help find them.
           </p>
         </div>
       </div>
