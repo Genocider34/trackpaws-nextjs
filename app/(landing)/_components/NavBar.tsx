@@ -5,12 +5,14 @@ interface NavBarProps {
   heroRef: React.RefObject<HTMLDivElement>;
   overviewRef: React.RefObject<HTMLDivElement>;
   featuresRef: React.RefObject<HTMLDivElement>;
+  onLoginClick: () => void;
 }
 
 export default function NavBar({
   heroRef,
   overviewRef,
   featuresRef,
+  onLoginClick
 }: NavBarProps) {
   const handleScroll = (target: "hero" | "overview" | "features") => {
     const ref =
@@ -55,6 +57,13 @@ export default function NavBar({
           onClick={() => handleScroll("features")}
         >
           Features
+        </li>
+        <li
+          className="hidden font-bold cursor-pointer sm:block"
+        >
+          <button onClick={onLoginClick} style={{ cursor: 'pointer', fontSize: '1rem', background: 'none', border: 'none', padding: 0 }}>
+            Login
+          </button>
         </li>
       </ul>
     </nav>
