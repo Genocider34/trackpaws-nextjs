@@ -1,23 +1,61 @@
 import React, { useEffect, useState } from 'react';
 import { MdEmail, MdLock } from 'react-icons/md';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth, db } from '../functions/firebase';
+import { doc, getDoc } from 'firebase/firestore';
 
 interface LoginFormProps {
     onClose: () => void;
+    onLoginSuccess: () => void;
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ onClose }) => {
+const LoginForm: React.FC<LoginFormProps> = ({ onClose, onLoginSuccess }) => {
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [rememberMe, setRememberMe] = useState<boolean>(false);
+    const [error, setError] = useState<string | null>(null);
     const [isClosing, setIsClosing] = useState<boolean>(false);
+    const [isLoadingButton, setIsLoadingButton] = useState<boolean>(false);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setIsLoadingButton(true);
+
+        try {
+            const userCredentials = await signInWithEmailAndPassword(auth, email, password);
+            const user = userCredentials.user;
+
+            const userRef = doc(db, 'user_profile', user.uid);
+
+            const userSnap = await getDoc(userRef);
+            if (userSnap.exists()) {
+                const userData = userSnap.data();
+                if(userData.isAdmin) {
+                    setError(null);
+                    onLoginSuccess();
+                }
+                else {
+                    setError("You don't have admin privileges.");
+                }
+            }
+            else {
+                setError("User not found!");
+            }
+        }
+        catch (error: any) {
+            setError(error.message);
+        }
+        finally {
+            setIsLoadingButton(false);
+        }
+    };
+
+    const handleCloseButton = () => {
         setIsClosing(true);
         setTimeout  (() => {
             onClose();
         }, 400);
-    };
+    }
 
     useEffect(() => {
         if (isClosing) {
@@ -70,8 +108,14 @@ const LoginForm: React.FC<LoginFormProps> = ({ onClose }) => {
                             className="w-full pl-12 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
-                    <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded-md mt-4">
-                        LOGIN
+                    <button type="submit" className={`w-full text-white py-2 rounded-md mt-4 ${isLoadingButton ? 'bg-blue-200 cursor-not-allowed' : 'bg-blue-500 hover:bg-[#3B82F6]/90 cursor-pointer'}`}
+                        disabled={isLoadingButton}
+                    >
+                        {isLoadingButton ? (<div className='flex justify-center items-center'>
+                                <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-white"></div>
+                            </div>) : 
+                            ('LOGIN')
+                        }
                     </button>
                     <div className="flex justify-between items-center text-sm text-gray-600 mt-4">
                         <label>
@@ -81,10 +125,13 @@ const LoginForm: React.FC<LoginFormProps> = ({ onClose }) => {
                     </div>
                 </form>
                 <center>
-                    <button onClick={handleSubmit} className="mt-4 text-sm text-gray-600 hover:text-blue-500">
+                    <button onClick={handleCloseButton} className="mt-4 text-sm text-gray-600 hover:text-blue-500">
                         Cancel
                     </button>
                 </center>
+
+                {/*Error Handling*/}
+                {error && <div className='text-red-500 text-center mt-1 -mb-5 text-sm'>{error}</div>}
             </div>
         </div>
     </div>

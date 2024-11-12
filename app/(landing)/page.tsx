@@ -7,9 +7,11 @@ import Features from "./_components/Features";
 import Footer from "./_components/Footer";
 import NavBar from "./_components/NavBar";
 import LoginForm from "./_components/LoginForm";
+import { useRouter } from "next/navigation";
 
 export default function LandingPage() {
   const [isLoginFormVisible, setIsLoginFormVisible] = useState(false);
+  const router = useRouter();
 
   const heroRef = useRef<HTMLDivElement>(null);
   const overviewRef = useRef<HTMLDivElement>(null); // Create a ref for the Overview section
@@ -18,27 +20,31 @@ export default function LandingPage() {
   const showLoginForm = () => setIsLoginFormVisible(true);
   const hideLoginForm = () => setIsLoginFormVisible(false);
 
+  const handleLoginSuccess = () => {
+    router.push('/admin');
+  }
+
   return (
     <main>
-      <NavBar
-        heroRef={heroRef}
-        overviewRef={overviewRef}
-        featuresRef={featuresRef}
-        onLoginClick={showLoginForm}
-      />
+        <NavBar
+          heroRef={heroRef}
+          overviewRef={overviewRef}
+          featuresRef={featuresRef}
+          onLoginClick={showLoginForm}
+        />
 
-      <div ref={heroRef}>
-        <Hero />
-      </div>
-      <div ref={overviewRef}>
-        <Overview />
-      </div>
-      <div ref={featuresRef}>
-        <Features />
-      </div>
-      <Footer />
+        <div ref={heroRef}>
+          <Hero />
+        </div>
+        <div ref={overviewRef}>
+          <Overview />
+        </div>
+        <div ref={featuresRef}>
+          <Features />
+        </div>
+        <Footer />
 
-      {isLoginFormVisible && <LoginForm onClose={hideLoginForm}/>}
+        {isLoginFormVisible && <LoginForm onClose={hideLoginForm} onLoginSuccess={handleLoginSuccess}/>}
     </main>
   );
 }
