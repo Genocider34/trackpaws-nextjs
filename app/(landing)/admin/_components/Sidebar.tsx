@@ -5,11 +5,10 @@ import { useRouter } from "next/navigation";
 import { FaUserAlt, FaClipboardList, FaRegHeart, FaChevronUp, FaChevronDown } from "react-icons/fa";
 
 interface SidebarProps {
-  adminName: string;
   logoTrackpaws: string;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ adminName, logoTrackpaws }) => {
+const Sidebar: React.FC<SidebarProps> = ({ logoTrackpaws }) => {
   const [isManageAccountsDropdownOpen, setIsManageAccountsDropdownOpen] = useState(false);
   const [isMissingPetsDropdownOpen, setIsMissingPetsDropdownOpen] = useState(false);
   const router = useRouter();
@@ -31,17 +30,12 @@ const Sidebar: React.FC<SidebarProps> = ({ adminName, logoTrackpaws }) => {
   {/* Sidebar */}
   <div className="w-64 h-full bg-gray-300 text-gray-800 flex flex-col p-4 rounded-r-lg">
     <div className="flex items-center space-1 mb-6 text-center">
-      <div className="text-2xl font-bold">Admin Panel</div>
+      <div className="text-2xl font-bold">Trackpaws</div>
       <img
         src={`${logoTrackpaws}`}
         alt="Avatar Icon"
         className="w-[75px] h-[75px] rounded-full"
       />
-    </div>
-
-    {/* Admin greeting */}
-    <div className="text-lg mb-4">
-      <p>Hello, <b>{adminName}!</b></p>
     </div>
 
     {/* Sidebar links */}
