@@ -43,7 +43,7 @@ const Sidebar: React.FC<SidebarProps> = ({ logoTrackpaws }) => {
       {/* Manage Accounts button with dropdown */}
       <button
         className="flex items-center space-x-2 hover:bg-gray-400 p-2 rounded"
-        onClick={() => handleNavigation("/request-of-ownership")}
+        onClick={() => handleNavigation("/admin")}
       >
         <FaTachometerAlt />
         <span>Dashboard</span>
@@ -62,10 +62,12 @@ const Sidebar: React.FC<SidebarProps> = ({ logoTrackpaws }) => {
         {/* Dropdown menu */}
         {isManageAccountsDropdownOpen && (
           <div className="bg-gray-200 rounded-md mt-2 p-2">
-            <a href="#" className="block px-4 py-2 rounded-md hover:bg-gray-300 text-sm">
+            <a href="#" className="block px-4 py-2 rounded-md hover:bg-gray-300 text-sm"
+            onClick={() => handleNavigation("/admin/user_accounts")}>
               User Accounts
             </a>
-            <a href="#" className="block px-4 py-2 rounded-md hover:bg-gray-300 text-sm">
+            <a href="#" className="block px-4 py-2 rounded-md hover:bg-gray-300 text-sm"
+            onClick={() => handleNavigation("/admin/admin_accounts")}>
               Admin Accounts
             </a>
           </div>
@@ -95,10 +97,12 @@ const Sidebar: React.FC<SidebarProps> = ({ logoTrackpaws }) => {
         {/* View Missing Pets Dropdown menu */}
         {isMissingPetsDropdownOpen && (
           <div className="bg-gray-200 rounded-md mt-2 p-2">
-            <a href="#" className="block px-4 py-2 rounded-md hover:bg-gray-300 text-sm">
+            <a href="#" className="block px-4 py-2 rounded-md hover:bg-gray-300 text-sm"
+            onClick={() => handleNavigation("admin/lost_pets")}>
               Lost Pets
             </a>
-            <a href="#" className="block px-4 py-2 rounded-md hover:bg-gray-300 text-sm">
+            <a href="#" className="block px-4 py-2 rounded-md hover:bg-gray-300 text-sm"
+            onClick={() => handleNavigation("/admin/found_pets")}>
               Found Pets
             </a>
           </div>
