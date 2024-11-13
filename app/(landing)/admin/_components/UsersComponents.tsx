@@ -30,31 +30,48 @@ const UserStats: React.FC = () => {
 
     const fetchInitialPets = async () => {
       try {
-        const petsRef = collection(db, "pending_lost_pets_db");
-        const q = query(petsRef, orderBy('CreatedAt', 'asc'), limit(2));
-
-        const petsFon = collection(db, "pending_found_pets_db");
-        const que = query(petsFon, orderBy('CreatedAt', 'asc'), limit(1));
-
-        const unsubscribeLostPets = onSnapshot(q, (snapshot) => {
-          const pets: PendingRequest[] = snapshot.docs.map((doc) => {
-            return {...doc.data() as PendingRequest};
+        const petsRefLost = collection(db, "pending_lost_pets_db");
+        const petsQueryLost = query(petsRefLost, orderBy('CreatedAt', 'asc'), limit(2));
+    
+        const petsRefFound = collection(db, "pending_found_pets_db");
+        const petsQueryFound = query(petsRefFound, orderBy('CreatedAt', 'asc'), limit(1));
+    
+        // Listen for real-time updates from both collections
+        const unsubscribeLostPets = onSnapshot(petsQueryLost, (snapshot) => {
+          const pets: PendingRequest[] = snapshot.docs.map((doc) => ({
+            ...doc.data(),
+          })) as PendingRequest[];
+  
+          // Reset the state each time, avoiding duplicates
+          setPendingRequests((prev) => {
+            const allPets = [...prev, ...pets];
+            // Remove duplicates based on the unique key (DocumentId + Name)
+            const uniquePets = Array.from(
+              new Map(allPets.map((pet) => [pet.DocumentId, pet])).values()
+            );
+            return uniquePets;
           });
-          setPendingRequests((prev) => [...pets, ...prev]);
         });
-
-        const unsubscribeFoundPets = onSnapshot(que, (snapshot) => {
-          const pets: PendingRequest[] = snapshot.docs.map((doc) => {
-            return {...doc.data() as PendingRequest};
+  
+        const unsubscribeFoundPets = onSnapshot(petsQueryFound, (snapshot) => {
+          const pets: PendingRequest[] = snapshot.docs.map((doc) => ({
+            ...doc.data(),
+          })) as PendingRequest[];
+  
+          setPendingRequests((prev) => {
+            const allPets = [...prev, ...pets];
+            // Remove duplicates based on the unique key (DocumentId + Name)
+            const uniquePets = Array.from(
+              new Map(allPets.map((pet) => [pet.DocumentId, pet])).values()
+            );
+            return uniquePets;
           });
-          setPendingRequests((prev) => [...prev, ...pets]);
         });
-
+  
         return () => {
           unsubscribeLostPets();
           unsubscribeFoundPets();
         };
-        
       } catch (error) {
         console.error("Error fetching pending lost pets:", error);
       }
@@ -117,13 +134,11 @@ const UserStats: React.FC = () => {
   <h3 className="text-xl font-bold mt-[15px] -mb-[10px]">Pending Requests</h3>
       <div className="md:col-span-3 bg-gray-300 text-white p-6 rounded-lg shadow-lg flex flex-col items-center w-full h-[340px]">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-[50px]">
-          {pendingRequests.length > 0? (
-            pendingRequests.map((request) => (
-              <PetBox key={request.DocumentId} pet={request} />
-            ))
-          ) : (
-            <p className="text-black ">No pending requests...</p>
-          )}
+        {pendingRequests.length > 0 ? (
+          <PetBox pets={pendingRequests} />
+        ) : (
+          <p className="text-black">No pending requests...</p>
+        )}
         </div>
       </div>
 
