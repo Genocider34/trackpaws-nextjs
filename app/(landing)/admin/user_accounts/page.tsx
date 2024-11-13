@@ -3,7 +3,6 @@
 import React, {useEffect, useState} from 'react';
 import { collection, Timestamp, onSnapshot, updateDoc, doc, deleteDoc } from 'firebase/firestore';
 import { db } from '../../functions/firebase';
-import { deleteUserByAdmin } from './userdeletion';
 
 interface UserAccounts {
   userId: string;
@@ -19,9 +18,29 @@ const FoundPets: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(0);
   const itemsPerPage = 10;
 
-  const handleDeleteAccount = async (userId: string) => {
+  const handleDeleteAccount = async (userId: string): Promise<void> => {
     if (window.confirm("Are you sure you want to delete this account?")) {
-      await deleteUserByAdmin(userId);
+      try {
+        const response = await fetch('userdeletion', {
+          method: 'DELETE',
+          body: JSON.stringify({userId}),
+          headers: {
+            'Content-Type' : 'application/json',
+          },
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          alert(data.message);
+        }
+        else {
+          alert(data.error);
+        }
+      }
+      catch (err) {
+        console.error('Error: ', err);
+        alert('An error has occured while deleting user');
+      }
     }
   };
 
