@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { MdEmail, MdLock } from 'react-icons/md';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, setPersistence, browserLocalPersistence } from 'firebase/auth';
 import { auth, db } from '../functions/firebase';
 import { doc, getDoc, updateDoc, Timestamp } from 'firebase/firestore';
 
@@ -17,11 +17,31 @@ const LoginForm: React.FC<LoginFormProps> = ({ onClose, onLoginSuccess }) => {
     const [isClosing, setIsClosing] = useState<boolean>(false);
     const [isLoadingButton, setIsLoadingButton] = useState<boolean>(false);
 
+    useEffect(() => {
+        const storedEmail = localStorage.getItem('email');
+        const storedPassword = localStorage.getItem('password');
+        if (storedEmail && storedPassword) {
+            setEmail(storedEmail);
+            setPassword(storedPassword);
+            setRememberMe(true);
+        }
+    }, []);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoadingButton(true);
 
         try {
+            if (rememberMe) {
+                await setPersistence(auth, browserLocalPersistence);
+                localStorage.setItem('email', email);
+                localStorage.setItem('password', password);
+            }
+            else {
+                localStorage.removeItem('email');
+                localStorage.removeItem('password');
+            }
+
             const userCredentials = await signInWithEmailAndPassword(auth, email, password);
             const user = userCredentials.user;
 
@@ -123,7 +143,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onClose, onLoginSuccess }) => {
                     </button>
                     <div className="flex justify-between items-center text-sm text-gray-600 mt-4">
                         <label>
-                            <input type="checkbox" className="mr-2" /> Remember me
+                            <input type="checkbox" className="mr-2" checked={rememberMe} onChange={() => setRememberMe(!rememberMe)}/> Remember me
                         </label>
                         <a href="#" className="text-blue-500 hover:underline">Forgot your password?</a>
                     </div>
