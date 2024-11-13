@@ -2,22 +2,24 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
+import { getFunctions } from "firebase/functions";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyCWrvb4U26fRoOi1uF9lOTXFLXyLLgPBD0",
-    authDomain: "trackpaws-608c0.firebaseapp.com",
-    databaseURL: "https://trackpaws-608c0-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "trackpaws-608c0",
-    storageBucket: "trackpaws-608c0.appspot.com",
-    messagingSenderId: "314396343479",
-    appId: "1:314396343479:web:c8ae9b8dbbc0d88dc8e132",
-    measurementId: "G-M0192M05QG"
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
   };
-
 const app = initializeApp(firebaseConfig);
 
 export const auth = getAuth(app);
+console.log(process.env.NEXT_PUBLIC_FIREBASE_API_KEY);
 
 export const db = getFirestore(app);
 
 export const storage = getStorage(app);
+
+export const functions = getFunctions(app);
