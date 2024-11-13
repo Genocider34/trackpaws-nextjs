@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { FaUserAlt, FaClipboardList, FaRegHeart, FaChevronUp, FaChevronDown } from "react-icons/fa";
+import { FaUserAlt, FaClipboardList, FaRegHeart, FaChevronUp, FaChevronDown, FaTachometerAlt } from "react-icons/fa";
 
 interface SidebarProps {
   logoTrackpaws: string;
@@ -41,6 +41,14 @@ const Sidebar: React.FC<SidebarProps> = ({ logoTrackpaws }) => {
     {/* Sidebar links */}
     <div className="flex flex-col space-y-4">
       {/* Manage Accounts button with dropdown */}
+      <button
+        className="flex items-center space-x-2 hover:bg-gray-400 p-2 rounded"
+        onClick={() => handleNavigation("/request-of-ownership")}
+      >
+        <FaTachometerAlt />
+        <span>Dashboard</span>
+      </button>
+
       <div className={`flex flex-col ${isManageAccountsDropdownOpen ? 'mb-0' : ''}`}>
         <button
           className="flex items-center space-x-2 hover:bg-gray-400 p-2 rounded w-full"

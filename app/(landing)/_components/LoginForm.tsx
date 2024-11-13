@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { MdEmail, MdLock } from 'react-icons/md';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth, db } from '../functions/firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, Timestamp } from 'firebase/firestore';
 
 interface LoginFormProps {
     onClose: () => void;
@@ -26,12 +26,16 @@ const LoginForm: React.FC<LoginFormProps> = ({ onClose, onLoginSuccess }) => {
             const user = userCredentials.user;
 
             const userRef = doc(db, 'user_profile', user.uid);
-
             const userSnap = await getDoc(userRef);
             if (userSnap.exists()) {
                 const userData = userSnap.data();
                 if(userData.isAdmin) {
                     setError(null);
+                    
+                    await updateDoc(userRef, {
+                        lastLogin: Timestamp.now()
+                    });
+
                     onLoginSuccess();
                 }
                 else {
