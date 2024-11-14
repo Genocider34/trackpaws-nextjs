@@ -20,7 +20,8 @@ interface PetRequestProps {
 
 const PetBox: React.FC<PetRequestProps> = ({ pets }) => {
     return (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-[300px] ml-11">
+        // <div className="grid grid-cols-1 md:grid-cols-3 gap-[300px] ml-11">
+        <div className="flex flex-wrap justify-center gap-4 w-full h-full">
           {pets.map((pet) => (
             <div key={pet.DocumentId} className="bg-white p-4 rounded-lg shadow-lg flex flex-col text-black w-[250px] relative">
               <center className='pt-5'>

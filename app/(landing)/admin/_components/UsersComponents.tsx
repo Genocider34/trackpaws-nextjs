@@ -132,8 +132,9 @@ const UserStats: React.FC = () => {
 
   {/* Middle Row: Pending Requests */}
   <h3 className="text-xl font-bold mt-[15px] -mb-[10px]">Pending Requests</h3>
-      <div className="md:col-span-3 bg-gray-300 text-white p-6 rounded-lg shadow-lg flex flex-col items-center w-full h-[340px]">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-[50px]">
+      <div className="md:col-span-3 bg-gray-300 text-white p-6 rounded-lg shadow-lg flex flex-col items-center w-full min-h-[340px]">
+        {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-[50px]"> */}
+        <div className="w-full h-full flex items-center justify-center">
         {pendingRequests.length > 0 ? (
           <PetBox pets={pendingRequests} />
         ) : (

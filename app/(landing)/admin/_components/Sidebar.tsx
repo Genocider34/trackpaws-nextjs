@@ -78,7 +78,7 @@ const Sidebar: React.FC<SidebarProps> = ({ logoTrackpaws }) => {
         {isMissingPetsDropdownOpen && (
           <div className="bg-gray-200 rounded-md mt-2 p-2">
             <a href="#" className="block px-4 py-2 rounded-md hover:bg-gray-300 text-sm"
-            onClick={() => handleNavigation("admin/lost_pets")}>
+            onClick={() => handleNavigation("/admin/lost_pets")}>
               Lost Pets
             </a>
             <a href="#" className="block px-4 py-2 rounded-md hover:bg-gray-300 text-sm"
