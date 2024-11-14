@@ -5,9 +5,9 @@ import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import { auth, db } from '../../functions/firebase';
 import { signOut, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
-import { onSnapshot, doc, getDoc } from 'firebase/firestore';
+import { onSnapshot, collection, where, query } from 'firebase/firestore';
 import AvatarUploaderModal from './AvatarUpload';
-
+import Image from 'next/image';
 
 
 const TopBar = () => {
@@ -17,47 +17,50 @@ const TopBar = () => {
     const [isModalAvatarOpen, setIsModalAvatarOpen] = useState(false);
     const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
-    const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-    const [adminName, setAdminName] = useState<string | null>(null);
+    const [avatarUrl, setAvatarUrl] = useState<string>('');
+    const [adminName, setAdminName] = useState<string>('');
+    const [isLoading, setIsLoading] = useState<boolean>(true);
     const router = useRouter();
 
     const toggleDropdown = () => {
       setIsDropdownOpen(prev => !prev);
     };
 
-    useEffect(() => {
+    const fetchData = () => {
       const userId = auth.currentUser?.uid;
-      if (!userId) return;
-  
-      const userDocRef = doc(db, 'user_profile', userId);
-
-      const fetchDataLoaded = async () => {
-        try {
-          const userSnap = await getDoc(userDocRef);
-  
-          if (userSnap.exists()) {
-            const userData = userSnap.get('username');
-            const userAvatar = userSnap.get('avatar');
-            setAvatarUrl(userAvatar);
-            setAdminName(userData);
-          }
-        }
-        catch (error) {
-          console.error("Fetching data interrupted. Reason: ", error);
-        }
+      if (!userId) {
+        setIsLoading(false);
+        return;
       }
-      
-      // Real-time listener for the avatar field
-      const unsubscribe = onSnapshot(userDocRef, (doc) => {
-        if (doc.exists()) {
-          setAvatarUrl(doc.data()?.avatar || null);
-          setAdminName(doc.data()?.username || null);
+  
+      const userProfileRef = collection(db, 'user_profile');
+      const userQuery = query(userProfileRef, where('userId', '==', userId)); // Assuming userId is stored as a field in Firestore
+  
+      const unsubscribe = onSnapshot(userQuery, (querySnapshot) => {
+        if (!querySnapshot.empty) {
+          const userDoc = querySnapshot.docs[0]; // Get the first matching document
+          const userData = userDoc.data();
+          const userAvatar = userData?.avatar || '/images/admin_icon.png'; // Fallback to default avatar if none is found
+          const userName = userData?.username || 'Admin'; // Fallback to 'Track' if no username found
+  
+          setAvatarUrl(userAvatar);
+          setAdminName(userName);
+  
+          // Optionally, save to localStorage for persistence on page reload
+        } else {
+          console.log("No matching user document found");
         }
+  
+        setIsLoading(false); // Set loading to false after data is fetched
       });
-      
-      fetchDataLoaded();
-      return () => unsubscribe(); // Clean up listener on unmount
-    }, []);
+  
+      // Cleanup the listener when the component unmounts
+      return () => unsubscribe();
+    }
+
+    useEffect(() => {
+      fetchData();
+    }, [])
   
     const handleLogout = async () => {
       // Implement logout logic here (e.g., using Firebase auth)
@@ -105,11 +108,13 @@ const TopBar = () => {
   
   {/* Hello, adminName with avatar (right-aligned) */}
   <div className="flex items-center space-x-3 mr-5"> {/* space-x-3 adds space between the avatar and the text */}
-    <div className="text-lg">Hello, <b>{adminName}! </b></div>
-    <img
-      src={`${avatarUrl}`}
+    <div className="text-lg">Hello, <b>{adminName !== "" ? adminName: 'Admin'}! </b></div>
+    <Image
+      src={`${avatarUrl !== "" ? avatarUrl: '/images/admin_icon.png'}`}
       alt="Avatar Icon"
-      className="w-[35px] h-[35px] rounded-full object-cover border-2 border-white-400"
+      width={35}
+      height={35}
+      className="rounded-full object-cover border-2 border-white-400"
       onClick={toggleDropdown}
     />
     {/* Menu icon for dropdown */}

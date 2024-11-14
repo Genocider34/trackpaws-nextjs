@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { storage, db, auth } from '../../functions/firebase'; // Import storage, db, and auth from firebase.js
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { doc, updateDoc } from 'firebase/firestore';
+import Image from 'next/image';
 
 interface AvatarUploaderModalProps {
   isOpen: boolean;
@@ -96,19 +97,23 @@ const AvatarUploaderModal: React.FC<AvatarUploaderModalProps> = ({ isOpen, onClo
         <div className="mb-4">
           {selectedFile && (
             <center>
-            <img
+            <Image
               src={URL.createObjectURL(selectedFile)}
               alt="Avatar Preview"
-              className="w-20 h-20 rounded-full object-cover border-4 border-blue-500"
+              width={120}
+              height={120}
+              className="rounded-full object-cover border-4 border-blue-500"
             />
             </center>
           )}
           {!selectedFile && imageUrl && (
             <center>
-            <img
+            <Image
               src={imageUrl}
               alt="Avatar Preview"
-              className="w-20 h-20 rounded-full object-cover border-4 border-blue-500"
+              width={120}
+              height={120}
+              className="rounded-full object-cover border-4 border-blue-500"
             />
             </center>
           )}

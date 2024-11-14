@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FaUserAlt, FaClipboardList, FaRegHeart, FaChevronUp, FaChevronDown, FaTachometerAlt } from "react-icons/fa";
+import Image from "next/image";
 
 interface SidebarProps {
   logoTrackpaws: string;
@@ -26,7 +27,9 @@ const Sidebar: React.FC<SidebarProps> = ({ logoTrackpaws }) => {
   <div className="w-64 h-full bg-gray-300 text-gray-800 flex flex-col p-4 rounded-r-lg">
     <div className="flex items-center space-1 mb-6 text-center">
       <div className="text-2xl font-bold">Trackpaws</div>
-      <img
+      <Image
+        width={75}
+        height={75}
         src={`${logoTrackpaws}`}
         alt="Avatar Icon"
         className="w-[75px] h-[75px] rounded-full"

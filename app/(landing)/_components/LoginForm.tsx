@@ -3,6 +3,7 @@ import { MdEmail, MdLock } from 'react-icons/md';
 import { signInWithEmailAndPassword, setPersistence, browserLocalPersistence } from 'firebase/auth';
 import { auth, db } from '../functions/firebase';
 import { doc, getDoc, updateDoc, Timestamp } from 'firebase/firestore';
+import Image from 'next/image';
 
 interface LoginFormProps {
     onClose: () => void;
@@ -66,8 +67,12 @@ const LoginForm: React.FC<LoginFormProps> = ({ onClose, onLoginSuccess }) => {
                 setError("User not found!");
             }
         }
-        catch (error: any) {
-            setError(error.message);
+        catch (error: unknown) {
+            if (error instanceof Error) {
+                setError(error.message);
+            } else {
+                setError("An unknown error occurred");
+            }
         }
         finally {
             setIsLoadingButton(false);
@@ -101,10 +106,12 @@ const LoginForm: React.FC<LoginFormProps> = ({ onClose, onLoginSuccess }) => {
             <div className="mt-16">
                 <div className="text-center mb-4 -mt-10">
                     <center>
-                        <img
+                        <Image
                             src="/images/admin_icon.png"
                             alt="Profile Icon"
-                            className="w-[100px] h-[100px] opacity-100"
+                            width={100}
+                            height={100}
+                            className="opacity-100"
                         />
                     </center>
                 </div>

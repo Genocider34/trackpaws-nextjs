@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 
 // Define the type for the pet data
 interface PendingRequestProps {
@@ -28,8 +29,10 @@ const PetBoxComp: React.FC<PetRequestProps> = ({ pets }) => {
                 <h3 className="absolute top-[20px] bg-blue-500 text-white rounded-md p-2 text-center z-10 w-[90px]">
                   {pet.Tag}
                 </h3>
-                <img 
-                  src={pet.Images} 
+                <Image
+                  width={100}
+                  height={100}
+                  src={pet.Images !== ""? pet.Images.toString() : "/images/question_mark_icon.png"} 
                   alt={pet.Breed} 
                   className="w-[100px] h-[100px] object-cover mb-4 rounded border-2 border-gray-500" 
                 />

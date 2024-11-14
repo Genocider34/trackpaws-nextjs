@@ -5,6 +5,7 @@ import { collection, onSnapshot, deleteDoc, doc, setDoc } from "firebase/firesto
 import { db } from "../../functions/firebase";
 import sendEmailNotification from "../../functions/sendEmail";
 import RejectModal from "./RejectRequestModa";
+import Image from "next/image";
 
 type LostPet = {
   DocumentId: string;
@@ -252,8 +253,10 @@ export default function PetRequestTables() {
                   </div>
                 )}
 
-                <img
-                  src={modalImageUrl}
+                <Image
+                  src={modalImageUrl.toString()}
+                  width={300}
+                  height={250}
                   alt="Pet Document"
                   className={`text-center min-w-[300px] object-contain mt-3 max-w-full max-h-screen md:max-h-[250px] ${!isLoading ? "rounded-lg border-blue-500 border-2" : ""}`}
                   onLoad={() => setIsLoading(false)}
