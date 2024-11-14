@@ -44,7 +44,7 @@ const FoundPets: React.FC = () => {
 
   const fetchData = async() => {
     const unsubscribe = onSnapshot(collection(db, "user_profile"), (querySnapshot) => {
-      let list: UserAccounts[] = [];
+      const list: UserAccounts[] = [];
       const oneMonthAgo = Timestamp.fromMillis(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
       querySnapshot.forEach((doc) => {

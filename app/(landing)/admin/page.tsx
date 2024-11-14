@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import UserStats from './_components/UsersComponents'; // Import UserStats component
 
 const AdminDashboard: React.FC = () => {

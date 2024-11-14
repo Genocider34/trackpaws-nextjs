@@ -131,7 +131,6 @@ export default function PetRequestTables() {
 
   const renderTable = () => {
     const data = selectedTable === "lostPets" ? lostPets : foundPets;
-    const totalPages = Math.ceil(data.length / itemsPerPage); // Calculate total pages
 
     // Slice the data to get the items for the current page
     const currentItems = data.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);

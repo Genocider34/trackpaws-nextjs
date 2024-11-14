@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { db } from '../../functions/firebase';  // Import Firebase
-import { collection, getDocs, DocumentSnapshot, limit, query, startAfter, where, orderBy } from 'firebase/firestore';
+import { collection, getDocs, DocumentSnapshot, limit, query, startAfter, where, orderBy, Timestamp } from 'firebase/firestore';
 import PetBoxComp from './PetBoxComponent';
 
 // Define the type for the pet data
@@ -15,7 +15,7 @@ interface PendingRequestProps {
     Gender: string;
     Breed: string;
     District: string;
-    CreatedAt: any;
+    CreatedAt: Timestamp;
 }
 
 const FoundPets: React.FC = () => {
@@ -26,52 +26,49 @@ const FoundPets: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>(''); // Search input state
   const [hasNextPage, setHasNextPage] = useState<boolean>(true); // Whether there is a next page
 
-  // Fetch pet requests data
-  const fetchPets = async () => {
+  const fetchPets = useCallback(async () => {
     try {
-      // const querySnapshot = await getDocs(collection(db, 'found_pets_db'));
-      // const petData = querySnapshot.docs.map((doc) => doc.data() as PendingRequestProps);
-      // setPets(petData);  // Set the pet data to state
       let petQuery = query(collection(db, 'found_pets_db'), orderBy('CreatedAt', 'desc'), limit(pageSize));
-
-      // Add search functionality if query is provided
-      if (searchQuery.trim()) {
-        petQuery = query(
-          petQuery,
-          where('Name', '>=', searchQuery),
-          where('Name', '<=', searchQuery + '\uf8ff') // Ensuring it covers the full range for partial matches
-        );
+      
+      if(searchQuery === "") {
+        //Do nothing.
       }
-
-      // Add pagination logic
-      if (lastVisible) {
+      else {
+        if (searchQuery.trim()) {
+          petQuery = query(
+            petQuery,
+            where('Name', '>=', searchQuery),
+            where('Name', '<=', searchQuery + '\uf8ff')
+          );
+        }
+      }
+  
+      if (lastVisible === lastVisible) {
+        //Do nothing.
+      }
+      else {
         petQuery = query(petQuery, startAfter(lastVisible));
       }
-
+  
       const querySnapshot = await getDocs(petQuery);
       const petData = querySnapshot.docs.map((doc) => doc.data() as PendingRequestProps);
-
-      setPets(petData);  // Set the pet data to state
-
-      if (querySnapshot.docs.length < pageSize) {
-        setHasNextPage(false); // No more pages if we fetched fewer pets than pageSize
-      } else {
-        setHasNextPage(true); // There might be another page if we fetched pageSize pets
-      }
-
-      // Update the last visible document for the next page
-      const lastVisibleDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
-      setLastVisible(lastVisibleDoc);
-
+  
+      setPets((prevPets) => {
+        const isDataSame = JSON.stringify(prevPets) === JSON.stringify(petData);
+        return isDataSame ? prevPets : petData;
+      });
+  
+      setHasNextPage(querySnapshot.docs.length === pageSize);
+      setLastVisible(querySnapshot.docs[querySnapshot.docs.length - 1]);
     } catch (error) {
       console.error('Error fetching pet data:', error);
     }
-  };
+  }, [searchQuery, lastVisible]);
 
   // Fetch pet data when the component mounts
   useEffect(() => {
     fetchPets();
-  }, [page, searchQuery]);
+  }, [fetchPets]);
 
   const handleNextPage = () => {
     setPage((prevPage) => prevPage + 1);

@@ -1,7 +1,7 @@
 "use client";
 
 import React, {useEffect, useState} from 'react';
-import { db, auth } from '../../functions/firebase';
+import { db } from '../../functions/firebase';
 import {getDocs, collection, Timestamp, query, orderBy, limit, onSnapshot} from 'firebase/firestore';
 import PetBox from './PetBoxForRequest';
 
@@ -78,7 +78,7 @@ const UserStats: React.FC = () => {
     };
 
     const fetchData = async() => {
-      let list: User[] = [];
+      const list: User[] = [];
       try {
         const querySnapshot = await getDocs(collection(db, "user_profile"));
         const oneMonthAgo = Timestamp.fromMillis(Date.now() - 30 * 24 * 60 * 60 * 1000);

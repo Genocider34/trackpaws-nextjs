@@ -2,7 +2,45 @@
 
 import React, { useState } from "react";
 
-const RejectModal = ({ pet, onReject, onClose }: any) => {
+interface LostPet {
+  DocumentId: string;
+  Username: string;
+  UserEmail: string;
+  Name: string;
+  Size: string;
+  Breed: string;
+  Gender: string;
+  Color: string;
+  AdditionalInfo: string;
+  FullAddress: string;
+  Type: string;
+  LastDate: string;
+  Images: string;
+}
+
+interface FoundPet {
+  DocumentId: string;
+  Username: string;
+  UserEmail: string;
+  Name: string;
+  Size: string;
+  Breed: string;
+  Gender: string;
+  Color: string;
+  AdditionalInfo: string;
+  FullAddress: string;
+  Type: string;
+  FoundDate: string;
+  Images: string;
+};
+
+interface RejectModalProps {
+  pet: LostPet | FoundPet;
+  onReject: (pet: LostPet | FoundPet, reason: string) => void;
+  onClose: () => void;
+}
+
+const RejectModal: React.FC<RejectModalProps> = ({ pet, onReject, onClose }) => {
   const [reason, setReason] = useState("");
 
   const handleSubmit = () => {

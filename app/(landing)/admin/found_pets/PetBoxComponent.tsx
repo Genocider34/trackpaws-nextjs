@@ -1,4 +1,5 @@
 import React from 'react';
+import { Timestamp } from 'firebase-admin/firestore';
 import Image from 'next/image';
 
 // Define the type for the pet data
@@ -11,7 +12,7 @@ interface PendingRequestProps {
     Gender: string;
     Breed: string;
     District: string;
-    CreatedAt: any;
+    CreatedAt: Timestamp;
 }
 
 interface PetRequestProps {
@@ -33,7 +34,7 @@ const PetBoxComp: React.FC<PetRequestProps> = ({ pets }) => {
                   width={100}
                   height={100}
                   src={pet.Images !== ""? pet.Images.toString() : "/images/question_mark_icon.png"} 
-                  alt={pet.Breed} 
+                  alt={""} 
                   className="w-[100px] h-[100px] object-cover mb-4 rounded border-2 border-gray-500" 
                 />
               </center>
@@ -43,7 +44,7 @@ const PetBoxComp: React.FC<PetRequestProps> = ({ pets }) => {
               <p className="text-sm"><strong>Gender:</strong> {pet.Gender}</p>
               <p className="text-sm"><strong>District:</strong> {pet.District}</p>
               <p className="text-sm">
-                <strong>Created At:</strong> {new Date(pet.CreatedAt.seconds * 1000).toLocaleDateString()}
+                <strong>Created At:</strong> {pet.CreatedAt.toDate().toLocaleDateString()}
               </p>
             </div>
           ))}

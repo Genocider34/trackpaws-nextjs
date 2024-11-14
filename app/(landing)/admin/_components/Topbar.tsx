@@ -19,7 +19,6 @@ const TopBar = () => {
     const [newPassword, setNewPassword] = useState('');
     const [avatarUrl, setAvatarUrl] = useState<string>('');
     const [adminName, setAdminName] = useState<string>('');
-    const [isLoading, setIsLoading] = useState<boolean>(true);
     const router = useRouter();
 
     const toggleDropdown = () => {
@@ -29,7 +28,6 @@ const TopBar = () => {
     const fetchData = () => {
       const userId = auth.currentUser?.uid;
       if (!userId) {
-        setIsLoading(false);
         return;
       }
   
@@ -51,7 +49,6 @@ const TopBar = () => {
           console.log("No matching user document found");
         }
   
-        setIsLoading(false); // Set loading to false after data is fetched
       });
   
       // Cleanup the listener when the component unmounts
