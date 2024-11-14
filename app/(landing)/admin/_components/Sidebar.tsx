@@ -57,10 +57,10 @@ const Sidebar: React.FC<SidebarProps> = ({ logoTrackpaws }) => {
       {/* Other sidebar buttons */}
       <button
         className="flex items-center space-x-2 hover:bg-gray-400 p-2 rounded"
-        onClick={() => handleNavigation("/request-of-ownership")}
+        onClick={() => handleNavigation("/admin/pending_requests")}
       >
         <FaClipboardList />
-        <span>Request of Ownership</span>
+        <span>Pending Requests</span>
       </button>
 
       {/* View Missing Pets button with dropdown */}
