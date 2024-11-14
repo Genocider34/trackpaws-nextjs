@@ -9,13 +9,8 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ logoTrackpaws }) => {
-  const [isManageAccountsDropdownOpen, setIsManageAccountsDropdownOpen] = useState(false);
   const [isMissingPetsDropdownOpen, setIsMissingPetsDropdownOpen] = useState(false);
   const router = useRouter();
-
-  const toggleManageAccountsDropdown = () => {
-    setIsManageAccountsDropdownOpen((prev) => !prev);
-  };
 
   const toggleMissingPetsDropdown = () => {
     setIsMissingPetsDropdownOpen((prev) => !prev);
@@ -49,29 +44,14 @@ const Sidebar: React.FC<SidebarProps> = ({ logoTrackpaws }) => {
         <span>Dashboard</span>
       </button>
 
-      <div className={`flex flex-col ${isManageAccountsDropdownOpen ? 'mb-0' : ''}`}>
+      <div className={`flex flex-col mb-0`}>
         <button
           className="flex items-center space-x-2 hover:bg-gray-400 p-2 rounded w-full"
-          onClick={toggleManageAccountsDropdown}
+          onClick={() => handleNavigation("/admin/user_accounts")}
         >
           <FaUserAlt />
           <span>Manage Accounts</span>
-          {isManageAccountsDropdownOpen ? <FaChevronUp /> : <FaChevronDown />}
         </button>
-
-        {/* Dropdown menu */}
-        {isManageAccountsDropdownOpen && (
-          <div className="bg-gray-200 rounded-md mt-2 p-2">
-            <a href="#" className="block px-4 py-2 rounded-md hover:bg-gray-300 text-sm"
-            onClick={() => handleNavigation("/admin/user_accounts")}>
-              User Accounts
-            </a>
-            <a href="#" className="block px-4 py-2 rounded-md hover:bg-gray-300 text-sm"
-            onClick={() => handleNavigation("/admin/admin_accounts")}>
-              Admin Accounts
-            </a>
-          </div>
-        )}
       </div>
 
       {/* Other sidebar buttons */}
