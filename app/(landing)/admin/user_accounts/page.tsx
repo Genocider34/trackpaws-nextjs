@@ -1,7 +1,7 @@
 "use client";
 
 import React, {useEffect, useState} from 'react';
-import { collection, Timestamp, onSnapshot, updateDoc, doc, deleteDoc } from 'firebase/firestore';
+import { collection, Timestamp, onSnapshot } from 'firebase/firestore';
 import { db } from '../../functions/firebase';
 
 interface UserAccounts {
