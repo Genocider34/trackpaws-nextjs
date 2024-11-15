@@ -45,34 +45,23 @@ const FoundPets: React.FC = () => {
   const handleDeleteAccount = async () => {
     if (userToDelete) {
       try {
-        // Call the server-side API to delete the user
         const response = await fetch('/api/delete-user', {
-          method: 'DELETE',
-          headers: { 'Content-Type': 'application/json' },
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ uid: userToDelete.userId }),
         });
-  
+    
         if (!response.ok) {
-          throw new Error(`Failed to delete user: ${response.status}, ${response.statusText}`);
+          throw new Error('Failed to delete user');
         }
-  
-        // Proceed with deleting Firestore data
-        const usersDocRef = doc(db, 'user_profile', userToDelete.userId);
-        await deleteDoc(usersDocRef);
-  
-        const userToDeleteRef = doc(db, 'user_to_be_deleted', 'delete_info');
-        await updateDoc(userToDeleteRef, {
-          [userToDelete.userId]: `${userToDelete.email}`,
-        });
-  
-        console.log(`User with email ${userToDelete.email} deleted successfully.`);
+    
+        const data = await response.json();
+        console.log(data.message); // Success message from server
       } catch (error) {
-        console.error('Error deleting user:', error);
-      } finally {
-        setShowConfirm(false); // Close the confirmation modal
+        console.error('Error:', error);
       }
-    }
-  };
+    };
+  }
 
   const fetchData = async() => {
     const unsubscribe = onSnapshot(collection(db, "user_profile"), (querySnapshot) => {
