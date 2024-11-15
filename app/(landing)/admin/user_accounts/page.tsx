@@ -1,7 +1,7 @@
 "use client";
 
 import React, {useEffect, useState} from 'react';
-import { collection, Timestamp, onSnapshot } from 'firebase/firestore';
+import { collection, Timestamp, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../../functions/firebase';
 
 interface UserAccounts {
@@ -21,27 +21,6 @@ const FoundPets: React.FC = () => {
   const [showConfirm, setShowConfirm] = useState<boolean>(false);
   const [userToDelete, setUserToDelete] = useState<UserAccounts | null>(null);
 
-  // const handleDeleteAccount = async () => {
-  //   if (userToDelete) {
-  //   try {
-  //     const usersDocRef = doc(db, 'user_profile', userToDelete.userId);
-  //     await deleteDoc(usersDocRef);
-
-  //     const userToDeleteRef = doc(db, 'user_to_be_deleted', 'delete_info');
-  //     await updateDoc(userToDeleteRef, {
-  //       [userToDelete.userId] : `${userToDelete.email}`,
-  //     });
-      
-  //     setShowConfirm(false);
-
-  //     console.log(`User with email ${userToDelete.email} deleted successfully`);
-  //   }
-  //   catch (error) {
-  //     console.error("Error deleting user: ", error);
-  //   }
-  // }
-  // };
-
   const handleDeleteAccount = async () => {
     if (userToDelete) {
       try {
@@ -55,6 +34,8 @@ const FoundPets: React.FC = () => {
           throw new Error('Failed to delete user');
         }
     
+        const usersDocRef = doc(db, 'user_profile', userToDelete.userId);
+        await deleteDoc(usersDocRef);
         const data = await response.json();
         console.log(data.message); // Success message from server
       } catch (error) {

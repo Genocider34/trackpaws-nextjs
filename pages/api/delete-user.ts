@@ -1,4 +1,4 @@
-import { firebase } from '@/lib/firebase'; // Firebase Admin SDK
+import admin from '@/lib/firebase'; // Firebase Admin SDK
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -12,7 +12,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   
     try {
       // Delete the user with Firebase Admin SDK
-      await firebase.auth().deleteUser(uid);
+      await admin.auth().deleteUser(uid);
   
       return res.status(200).json({ message: `User with UID ${uid} deleted successfully.` });
     } catch (error) {
