@@ -21,25 +21,57 @@ const FoundPets: React.FC = () => {
   const [showConfirm, setShowConfirm] = useState<boolean>(false);
   const [userToDelete, setUserToDelete] = useState<UserAccounts | null>(null);
 
+  // const handleDeleteAccount = async () => {
+  //   if (userToDelete) {
+  //   try {
+  //     const usersDocRef = doc(db, 'user_profile', userToDelete.userId);
+  //     await deleteDoc(usersDocRef);
+
+  //     const userToDeleteRef = doc(db, 'user_to_be_deleted', 'delete_info');
+  //     await updateDoc(userToDeleteRef, {
+  //       [userToDelete.userId] : `${userToDelete.email}`,
+  //     });
+      
+  //     setShowConfirm(false);
+
+  //     console.log(`User with email ${userToDelete.email} deleted successfully`);
+  //   }
+  //   catch (error) {
+  //     console.error("Error deleting user: ", error);
+  //   }
+  // }
+  // };
+
   const handleDeleteAccount = async () => {
     if (userToDelete) {
-    try {
-      const usersDocRef = doc(db, 'user_profile', userToDelete.userId);
-      await deleteDoc(usersDocRef);
-
-      const userToDeleteRef = doc(db, 'user_to_be_deleted', 'delete_info');
-      await updateDoc(userToDeleteRef, {
-        [userToDelete.email] : "for deletion only",
-      });
-      
-      setShowConfirm(false);
-
-      console.log(`User with email ${userToDelete.email} deleted successfully`);
+      try {
+        // Call the server-side API to delete the user
+        const response = await fetch('/api/delete-user', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ uid: userToDelete.userId }),
+        });
+  
+        if (!response.ok) {
+          throw new Error(`Failed to delete user: ${response.status}, ${response.statusText}`);
+        }
+  
+        // Proceed with deleting Firestore data
+        const usersDocRef = doc(db, 'user_profile', userToDelete.userId);
+        await deleteDoc(usersDocRef);
+  
+        const userToDeleteRef = doc(db, 'user_to_be_deleted', 'delete_info');
+        await updateDoc(userToDeleteRef, {
+          [userToDelete.userId]: `${userToDelete.email}`,
+        });
+  
+        console.log(`User with email ${userToDelete.email} deleted successfully.`);
+      } catch (error) {
+        console.error('Error deleting user:', error);
+      } finally {
+        setShowConfirm(false); // Close the confirmation modal
+      }
     }
-    catch (error) {
-      console.error("Error deleting user: ", error);
-    }
-  }
   };
 
   const fetchData = async() => {
