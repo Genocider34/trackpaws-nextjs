@@ -1,14 +1,16 @@
 "use client";
 
 import { useState, useEffect, ChangeEvent } from "react";
-import { collection, onSnapshot, deleteDoc, doc, setDoc } from "firebase/firestore";
+import { collection, onSnapshot, deleteDoc, doc, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../functions/firebase";
 import sendEmailNotification from "../../functions/sendEmail";
 import RejectModal from "./RejectRequestModa";
+import UserRejectModal from "./UserRejectModal";
 import Image from "next/image";
 
 type LostPet = {
   DocumentId: string;
+  DocumentImages: string;
   Username: string;
   UserEmail: string;
   Name: string;
@@ -25,6 +27,7 @@ type LostPet = {
 
 type FoundPet = {
   DocumentId: string;
+  DocumentImages: string;
   Username: string;
   UserEmail: string;
   Name: string;
@@ -39,23 +42,38 @@ type FoundPet = {
   Images: string;
 };
 
-type TableType = "lostPets" | "foundPets";
+type VerifyUsers = {
+  userId: string;
+  isAdminVerified: boolean;
+  isRejected: boolean;
+  email: string;
+};
+
+type TableType = "lostPets" | "foundPets" | "pendingUsers";
 
 export default function PetRequestTables() {
   const [selectedTable, setSelectedTable] = useState<TableType>("lostPets");
   const [lostPets, setLostPets] = useState<LostPet[]>([]);
   const [foundPets, setFoundPets] = useState<FoundPet[]>([]);
+  const [pendingUsers, setPendingUsers] = useState<VerifyUsers[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 4;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalImageUrl, setModalImageUrl] = useState<string | null>(null);
   const [modalPetInfo, setModalPetInfo] = useState<LostPet | FoundPet | null>(null);
+  const [modalUserInfo, setModalUserInfo] = useState<VerifyUsers | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showRejectModal, setShowRejectModal] = useState(false);
+  const [showUserRejectModal, setShowUserRejectModal] = useState(false);
 
   const handleOpenRejectModal = (pet: LostPet | FoundPet) => {
     setModalPetInfo(pet);
     setShowRejectModal(true);
+  };
+
+  const handleOpenRejectModalUser = (user: VerifyUsers) => {
+    setModalUserInfo(user);
+    setShowUserRejectModal(true);
   };
 
   const handleReject = async (pet: LostPet | FoundPet, reason: string) => {
@@ -66,12 +84,37 @@ export default function PetRequestTables() {
       await deleteDoc(petRef);
 
       // Send email notification to the user
-      await sendEmailNotification(pet.UserEmail, reason);
+      await sendEmailNotification(pet.UserEmail);
 
       alert(`Pet ${pet.Username} application has been rejected.`);
     } catch (error) {
       console.error("Error rejecting the pet:", error);
       alert("There was an error rejecting the pet.");
+    }
+  };
+
+  const handleRejectPendingUser = async (user: VerifyUsers) => {
+    try {
+      // Optionally send an email notification
+      await sendEmailNotification(user.email);
+
+      const response = await fetch('/api/delete-user', {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: user.email }),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to delete user');
+      }
+
+      const data = await response.json();
+      console.log(data.message);
+
+      alert(`User ${user.email} has been rejected.`);
+    } catch (error) {
+      console.error("Error rejecting the user:", error);
+      alert("There was an error rejecting the user.");
     }
   };
 
@@ -84,9 +127,14 @@ export default function PetRequestTables() {
       setFoundPets(snapshot.docs.map((doc) => ({ ...doc.data() } as FoundPet)));
     });
 
+    const pendingUsersUnsub = onSnapshot(collection(db, "pending_user_profile"), (snapshot) => {
+      setPendingUsers(snapshot.docs.map((doc) => ({...doc.data() as VerifyUsers})));
+    })
+
     return () => {
       lostPetsUnsub();
       foundPetsUnsub();
+      pendingUsersUnsub();
     };
   }, []);
 
@@ -129,11 +177,101 @@ export default function PetRequestTables() {
     }
   };
 
+  const handleAcceptUser = async (user: VerifyUsers) => {
+    try {
+      const sourceCollection = selectedTable === "pendingUsers" ? "pending_user_profile" : "";
+      const destinationCollection = selectedTable === "pendingUsers" ? "user_profile" : "";
+      
+      await deleteDoc(doc(db, sourceCollection, user.userId));
+
+      await setDoc(doc(db, destinationCollection, user.userId), {
+        isAdminVerified: !user.isAdminVerified,
+        userId: user.userId,
+        email: user.email,
+        hasCompletedRegistration: false,
+      });
+
+      console.log("User moved successfully");
+    }
+    catch (error) {
+      console.error("Error moving user: ", error);
+    }
+  }
+
   const renderTable = () => {
-    const data = selectedTable === "lostPets" ? lostPets : foundPets;
+    let data: any[] = [];
+    if (selectedTable === "lostPets") data = lostPets;
+    if (selectedTable === "foundPets") data = foundPets;
+    if (selectedTable === "pendingUsers") data = pendingUsers;
 
     // Slice the data to get the items for the current page
     const currentItems = data.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+    if (selectedTable === "pendingUsers") {
+      return (
+        <table className="w-full text-center bg-white shadow-lg rounded-lg overflow-hidden">
+          <thead className="bg-gray-300 border-b">
+            <tr>
+              <th className="py-3 px-6 font-semibold text-sm text-gray-600">User Id</th>
+              <th className="py-3 px-6 font-semibold text-sm text-gray-600">Email</th>
+              <th className="py-3 px-6 font-semibold text-sm text-gray-600">Status</th>
+              <th className="py-3 px-6 font-semibold text-sm text-gray-600">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {currentItems.map((user) => (
+              <tr key={user.userId} className="border-b hover:bg-gray-50">
+                <td className="py-3 px-6">{user.userId}</td>
+                <td className="py-3 px-6">{user.email}</td>
+                <td className="py-3 px-6">
+              <span
+                className={`rounded-full text-xs font-medium ${
+                  user.isRejected === false ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+                }`}
+              >
+                {`${user.isRejected === false ? "Pending" : "Rejected"}`}
+              </span>
+            </td>
+                <td className="py-3 px-6 space-x-2">
+                  <button
+                    onClick={() => handleAcceptUser(user)}
+                    className="bg-green-500 text-white rounded-lg px-4 py-2 hover:bg-green-700 text-sm"
+                  >
+                    Accept
+                  </button>
+                  {user.isRejected === false && (
+                    <button
+                    onClick={async () => {
+                      try {
+                      const sourceCollection = selectedTable === "pendingUsers" ? "pending_user_profile" : "";
+
+                      await updateDoc(doc(db, sourceCollection, user.userId), {
+                        isRejected: true,
+                      });
+                      }
+                      catch (error) {
+                        console.error("Error rejecting user: ", error);
+                      }
+                    }}
+                    className="bg-orange-500 text-white rounded-lg px-4 py-2 hover:bg-red-700 text-sm"
+                  >
+                    Reject
+                  </button>)}
+                  {user.isRejected === true && (
+                    <button
+                    onClick={() => handleOpenRejectModalUser(user)}
+                    className="bg-red-500 text-white rounded-lg px-4 py-2 hover:bg-red-700 text-sm"
+                    >
+                      Delete
+                    </button>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      );
+    }
 
     return (
     <table className="w-full text-center bg-white shadow-lg rounded-lg overflow-hidden">
@@ -203,6 +341,7 @@ export default function PetRequestTables() {
       >
         <option value="lostPets">Lost Pets</option>
         <option value="foundPets">Found Pets</option>
+        <option value="pendingUsers">Pending Users</option>
       </select>
 
       {/* Render the selected table */}
@@ -210,24 +349,47 @@ export default function PetRequestTables() {
 
       {/* Pagination controls */}
       <div className="absolute bottom-0 w-full max-w-[1000px] flex justify-between items-center mt-4 p-4 bg-white shadow-md">
-          <button
-            onClick={() => setCurrentPage(currentPage - 1)}
-            disabled={currentPage === 1}
-            className="bg-gray-400 text-white rounded-lg px-4 py-2 hover:bg-gray-500 disabled:cursor-not-allowed"
-          >
-            Previous
-          </button>
-          <span>
-            Page {currentPage} of {Math.ceil((selectedTable === "lostPets" ? lostPets : foundPets).length / itemsPerPage)}
-          </span>
-          <button
-            onClick={() => setCurrentPage(currentPage + 1)}
-            disabled={currentPage === Math.ceil((selectedTable === "lostPets" ? lostPets : foundPets).length / itemsPerPage)}
-            className="bg-gray-400 text-white rounded-lg px-4 py-2 hover:bg-gray-500 disabled:cursor-not-allowed"
-          >
-            Next
-          </button>
-        </div>
+        <button
+          onClick={() => setCurrentPage(currentPage - 1)}
+          disabled={currentPage === 1}
+          className="bg-gray-400 text-white rounded-lg px-4 py-2 hover:bg-gray-500 disabled:cursor-not-allowed"
+        >
+          Previous
+        </button>
+        <span>
+          Page {currentPage} of{" "}
+          {Math.max(
+            1, // Ensure that at least 1 page is shown even if there are no items
+            Math.ceil(
+              (selectedTable === "lostPets"
+                ? lostPets.length
+                : selectedTable === "foundPets"
+                ? foundPets.length
+                : pendingUsers.length) / itemsPerPage
+            )
+          )}
+        </span>
+        <button
+          onClick={() => setCurrentPage(currentPage + 1)}
+          disabled={
+            currentPage ===
+            Math.max(
+              1, // Ensure that at least 1 page is shown even if there are no items
+              Math.ceil(
+                (selectedTable === "lostPets"
+                  ? lostPets.length
+                  : selectedTable === "foundPets"
+                  ? foundPets.length
+                  : pendingUsers.length) / itemsPerPage
+              )
+            )
+          }
+          className="bg-gray-400 text-white rounded-lg px-4 py-2 hover:bg-gray-500 disabled:cursor-not-allowed"
+        >
+          Next
+        </button>
+      </div>
+
 
       {/* Modal for viewing the image and additional information */}
       {isModalOpen && modalImageUrl && modalPetInfo && (
@@ -299,6 +461,14 @@ export default function PetRequestTables() {
           onClose={() => setShowRejectModal(false)}
         />
       )}
+      {showUserRejectModal && modalUserInfo && (
+        <UserRejectModal
+          user={modalUserInfo}
+          onReject={handleRejectPendingUser}
+          onClose={() => setShowUserRejectModal(false)}
+        />
+      )}
+
     </div>
   );
 }

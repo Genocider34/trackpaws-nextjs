@@ -4,17 +4,21 @@ import { NextApiRequest, NextApiResponse } from 'next';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "DELETE")
   {
-    const { uid } = req.body;
+    const { email } = req.body;
 
-    if (!uid) {
+    if (!email) {
       return res.status(400).json({ error: 'UID is required' });
     }
   
     try {
       // Delete the user with Firebase Admin SDK
+      const userRecord = await admin.auth().getUserByEmail(email);
+      const uid = userRecord.uid;
+      
+      await admin.firestore().collection('user_profile').doc(uid).delete();
       await admin.auth().deleteUser(uid);
-  
-      return res.status(200).json({ message: `User with UID ${uid} deleted successfully.` });
+
+      return res.status(200).json({ message: `User with UID: ${uid} and EMAIL: ${email} deleted successfully.` });
     } catch (error) {
       console.error('Error deleting user:', error);
       return res.status(500).json({

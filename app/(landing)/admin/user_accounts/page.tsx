@@ -27,7 +27,7 @@ const FoundPets: React.FC = () => {
         const response = await fetch('/api/delete-user', {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ uid: userToDelete.userId }),
+          body: JSON.stringify({ email: userToDelete.email }),
         });
     
         if (!response.ok) {

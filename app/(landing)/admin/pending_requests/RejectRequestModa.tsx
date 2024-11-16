@@ -4,6 +4,7 @@ import React, { useState } from "react";
 
 interface LostPet {
   DocumentId: string;
+  DocumentImages: string;
   Username: string;
   UserEmail: string;
   Name: string;
@@ -20,6 +21,7 @@ interface LostPet {
 
 interface FoundPet {
   DocumentId: string;
+  DocumentImages: string;
   Username: string;
   UserEmail: string;
   Name: string;
@@ -69,7 +71,7 @@ const RejectModal: React.FC<RejectModalProps> = ({ pet, onReject, onClose }) => 
           onClick={handleSubmit}
           className="bg-red-500 text-white px-4 py-2 rounded"
         >
-          Submit Rejection
+          Submit
         </button>
       </div>
     </div>

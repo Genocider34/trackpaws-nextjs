@@ -2,11 +2,9 @@
 
 import React, {useState, useEffect} from 'react';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
-import { auth, db } from '../../functions/firebase';
+import { auth } from '../../functions/firebase';
 import { signOut, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
-import { onSnapshot, collection, where, query } from 'firebase/firestore';
-import AvatarUploaderModal from './AvatarUpload';
 import Image from 'next/image';
 
 
@@ -14,49 +12,18 @@ const TopBar = () => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isConfirmModalOpen, setIsConfirmModalConfirm] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isModalAvatarOpen, setIsModalAvatarOpen] = useState(false);
     const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
-    const [avatarUrl, setAvatarUrl] = useState<string>('');
-    const [adminName, setAdminName] = useState<string>('');
+    const avatarUrl = "/images/admin_image_icon.jpg";
+    const adminName =  "Admin";
     const router = useRouter();
 
     const toggleDropdown = () => {
       setIsDropdownOpen(prev => !prev);
     };
 
-    const fetchData = () => {
-      const userId = auth.currentUser?.uid;
-      if (!userId) {
-        return;
-      }
-  
-      const userProfileRef = collection(db, 'user_profile');
-      const userQuery = query(userProfileRef, where('userId', '==', userId)); // Assuming userId is stored as a field in Firestore
-  
-      const unsubscribe = onSnapshot(userQuery, (querySnapshot) => {
-        if (!querySnapshot.empty) {
-          const userDoc = querySnapshot.docs[0]; // Get the first matching document
-          const userData = userDoc.data();
-          const userAvatar = userData?.avatar || '/images/admin_icon.png'; // Fallback to default avatar if none is found
-          const userName = userData?.username || 'Admin'; // Fallback to 'Track' if no username found
-  
-          setAvatarUrl(userAvatar);
-          setAdminName(userName);
-  
-          // Optionally, save to localStorage for persistence on page reload
-        } else {
-          console.log("No matching user document found");
-        }
-  
-      });
-  
-      // Cleanup the listener when the component unmounts
-      return () => unsubscribe();
-    }
-
     useEffect(() => {
-      fetchData();
+      
     }, [])
   
     const handleLogout = async () => {
@@ -105,13 +72,13 @@ const TopBar = () => {
   
   {/* Hello, adminName with avatar (right-aligned) */}
   <div className="flex items-center space-x-3 mr-5"> {/* space-x-3 adds space between the avatar and the text */}
-    <div className="text-lg">Hello, <b>{adminName !== "" ? adminName: 'Admin'}! </b></div>
+    <div className="text-lg">Hello, <b>{adminName}! </b></div>
     <Image
-      src={`${avatarUrl !== "" ? avatarUrl: '/images/admin_icon.png'}`}
+      src={`${avatarUrl}`}
       alt="Avatar Icon"
-      width={35}
-      height={35}
-      className="rounded-full object-cover border-2 border-white-400"
+      width={45}
+      height={45}
+      className="rounded-full w-[35px] h-[35px] object-cover border-2 border-white-400"
       onClick={toggleDropdown}
     />
     {/* Menu icon for dropdown */}
@@ -126,13 +93,6 @@ const TopBar = () => {
         {/* Dropdown menu */}
         {isDropdownOpen && (
           <div className="absolute right-0 mt-[130px] w-30 bg-white text-black shadow-lg rounded-md">
-            <button
-              className="block w-full text-left px-4 py-2 hover:bg-gray-200 text-sm"
-              onClick={() => setIsModalAvatarOpen(true)}
-            >
-              Edit Avatar
-            </button>
-            <AvatarUploaderModal isOpen={isModalAvatarOpen} onClose={() => setIsModalAvatarOpen(false)}/>
             <button
               onClick={() => setIsModalOpen(true)}
               className="block w-full text-left px-4 py-2 hover:bg-gray-200 text-sm"

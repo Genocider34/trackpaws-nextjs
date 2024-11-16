@@ -12,42 +12,44 @@ interface EmailData {
     textContent: string;
 }
 
-const sendEmailNotification = async(useremail: string, reason: string) :Promise<void> => {
+const sendEmailNotification = async(useremail: string) :Promise<void> => {
 
-    const apiKey = process.env.AXIOS_PRIVATE_KEY;
+    const apiKey = process.env.BREVO_API_KEY;
 
-    const emailData: EmailData = {
-        sender: {
-            email: "trackpaws.adm@gmail.com",
-            name: "Trackpaws",
-        },
-        to: [{
-            email: useremail,
-        }],
-        subject: "Request Denied",
-        textContent: `Your pending request application was denied.\nReason: ${reason}`,
-    };
-
-    try {
-        const response = await axios.post(
-            "https://api.sendinblue.com/v3/smtp/email",
-            emailData,
-            {
-                headers: {
-                    "Content-Type" : "application/json",
-                    "api-key" : apiKey,
-                },
-            }
-        );
-
-        console.log("Email sent successfully: ", response.data);
-    }
-    catch(error : unknown) {
-        if (axios.isAxiosError(error)) {
-            console.error("Failed to send email: ", error.response ? error.response.data : error.message);
+    if (!apiKey) {
+        const emailData: EmailData = {
+            sender: {
+                email: "trackpaws.adm@gmail.com",
+                name: "Trackpaws",
+            },
+            to: [{
+                email: useremail,
+            }],
+            subject: "Request Denied",
+            textContent: "Your pending request application was denied.",
+        };
+    
+        try {
+            const response = await axios.post(
+                "https://api.sendinblue.com/v3/smtp/email",
+                emailData,
+                {
+                    headers: {
+                        "Content-Type" : "application/json",
+                        "api-key" : apiKey,
+                    },
+                }
+            );
+    
+            console.log("Email sent successfully: ", response.data);
         }
-        else {
-            console.error("An unexpected error occurred:", error);
+        catch(error : unknown) {
+            if (axios.isAxiosError(error)) {
+                console.error("Failed to send email: ", error.response ? error.response.data : error.message);
+            }
+            else {
+                console.error("An unexpected error occurred:", error);
+            }
         }
     }
 };
